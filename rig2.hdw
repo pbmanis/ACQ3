@@ -1,0 +1,137 @@
+// Hardware strucure definition for Acq3
+// This file is Rig Specific. One named file for each rig
+// Paul B. Manis 4/15/2008
+//
+// define us as a "hardware" structure.
+
+title = "Rig2 Hardware"
+
+hardware = "rig2.hdw" % this is the filename for the configuration
+// it should be the  name of THIS FILE.
+// the following are in the structure, but are actually filled by 
+// the program when it starts from the daqhwinfo call.
+// 
+NAcqBoards = 1  % number of acquisition boards (currently always 1)
+Boards = "NI6052E" % we get capabilities from the boards in the system
+Channels = 16
+MaxRate = 333000 % samples per second per channel sampled
+
+// next section defines the amplifiers in the system
+NInputDevices = 3 % the number of "amplifiers" we have attached in this rig
+
+// for each Input Device, specify the connections etc.
+[InputDevice1]
+Amplifier = "multiclamp"
+Amp1 = [4 3] % which a/d port for primary/secondary channels first amp?
+# Amp2 = [6 7] % which a/d port for primary/secondary channels second amp?
+TelegraphChannels = 0 % we don't have to define this since telegraph is handled differently.
+VCCapable = 1 % we can do both voltage and current clamp
+CCCapable = 1
+
+[InputDevice2]
+Amplifier = "multiclamp"
+% Amp1 = [5 4] % which a/d port for primary/secondary channels first amp?
+Amp1 = [6 7] % which a/d port for primary/secondary channels second amp?
+TelegraphChannels = 0 % we don't have to define this since telegraph is handled differently.
+VCCapable = 1 % we can do both voltage and current clamp
+CCCapable = 1
+
+// if we have a secondary amplifier connected, it would go here like
+// this:
+[InputDevice3]
+Amplifier = "axopatch"
+Amp1 = [1 2] % which a/d ports for primary output?
+VCCapable = 1 % we can do both current and voltage clamp
+CCCapable = 1
+TelegraphChannels = [13 14 15] % telegraph channels for axopatch or:
+
+// [InputDevice5]
+//Amplifier = "axoprobe"
+//Amp1 % which a/d port for primary outputs?
+// VCCapable = 0
+// CCCapable = 1
+//TelegraphChannels = -1 % There are no telegraph channels, use fixed definitions 
+
+// TTL is not really an amplifier, but it is a possible input that we would capture
+// directly, so list it here
+[InputDevice5]
+Amplifier = "ttl'
+PrimaryChan = 11
+
+//=========================================================================
+// DO NOT CHANGE THE FOLLOWING DEFINITIONS:
+// These are the amplifier-specific definitions that affect how the signals 
+// are scaled. They are determined by the hardware itself. In some cases,
+// this information might be available from the amplifier, but in the older
+// units, it is not, and so must be hard-coded somewhere. This is is
+// where hardcoding is set, and nowhere else.
+// The values are for the two signals from either channel of the amp.
+// according to the mode they are in. 
+// values for multiclamp 700A set 8/13/08. 
+// values for multiclamp 700B set 6/19/2012. 
+[multiclamp] % define sensor ranges for the multiclamp
+// all units ranges are defined for a gain of 1
+// input side:
+SensorRangeCC = [10 10] % primary and secondary outputs (either amp)
+// UnitsRangeCC = [40000 10000] % at max sensor output, what is value at input (ORIGINAL, 6/2012)
+UnitsRangeCC = [20000 1000] % at max sensor output, what is value at input
+InputRangeCC = [10 10]
+UnitsCC = "mV pA" % amp in current clamp?
+
+SensorRangeVC = [10 10] % primary and secondary outputs (either amp)
+// UnitsRangeVC = [2000 20000] % at max sensor output - V, pA
+UnitsRangeVC = [1000 20000] % at max sensor output - V, pA
+UnitsVC = "nA mV"
+InputRangeVC = [10 10]
+
+// output side
+OutputRange = 10
+OutputUnitsVC = "mV" 
+OutputUnitsCC = "pA"
+OutputUnitsRangeVC = [200 200] % mV amp (headstage Vcommand) for full scale output (10V)
+OutputUnitsRangeCC = [20000 20000] % pA/10V
+ExtCmd_VC = [20 20] % mV/V - set in "Gains" in panel
+ExtCmd_CC = [400 400] % pA/V - set in "Gains" in panel
+
+[axopatch] // define ranges for axopatch series
+SensorRangeCC = [10 10]
+SensorRangeVC = [10 10]
+UnitsRangeVC = [20 1000]
+UnitsRangeCC = [1000 20]
+UnitsCC = "mV pA"
+UnitsVC = "pA mV"
+InputRangeCC = [10 10]
+InputRangeVC = [10 10]
+
+OutputRange = 10
+OutputUnitsVC = "mV"
+OutputUnitsCC = "pA"
+OutputUnitsRangeVC = [4000 20000] % pA/10V
+OutputUnitsRangeCC = [20000 20000] % pA/10V
+ExtCmd_VC = [20 20] % mV/V
+ExtCmd_CC = [400 400] % pA/V
+
+[axoprobe] // define ranges for axopatch series
+SensorRangeCC = [10 10]
+SensorRangeVC = [10 10]
+UnitsRangeVC = [20 1000] % not used
+UnitsRangeCC = [1000 20]
+UnitsCC = "mV pA"
+InputRangeCC = [10 10]
+InputRangeVC = [10 10]
+UnitsVC = "pA mV" % not used
+OutputRange = 10
+OutputUnitsVC = "mV"
+OutputUnitsCC = "pA"
+OutputUnitsRangeVC = [4000 20000] % pA/10V
+OutputUnitsRangeCC = [20000 20000] % pA/10V
+ExtCmd_VC = 20 % mV/V 
+ExtCmd_CC = 400 % pA/V 
+
+[TTL] % pulse inputs for synchronization recorded on other channels
+SensorRange = 5 % 5 V range
+UnitsRange = 1 % value will be 1 or 0
+Units = "V" % "volts" true/false
+InputRange = 10
+
+

@@ -1,0 +1,261 @@
+//acq_model.hoc - 
+// reads a stim file from disk (stim.dat)
+// and "plays" it into the cell
+// The stim file has the following structure:
+// (ascii text file)
+// first line: model to select (1-6)
+// second line: dt of stimulus
+// third line: the number of points in the stimulus
+// The remainder of the file is the stimulus waveform
+// The resulting voltage is written out in outfile.dat
+// first line: model run
+// second line: dt of stimulus
+// thrid line: number of points in the stimulus
+// remainder of file:
+// t  i  v  in floating point format, tab spaced.
+// 
+
+init_vec_size=25000 // points in initial vectors for data (large to minimize resizing)
+
+objref stim, stimt, ic, infile, outfile
+objref idat, vdat, tdat
+idat = new Vector(init_vec_size, 0)
+vdat = new Vector(init_vec_size, 0)
+tdat = new Vector(init_vec_size, 0)
+
+strdef stemp
+model = 1
+ampmode = 0
+tstop = 100
+sdt = 0.01
+nstim = 100
+
+// read the stim file
+infile = new File()
+u = infile.ropen("stim.dat")
+if(u == 0) {
+	printf("\n Neuron: UNABLE TO OPEN INPUT FILE: %s\n\n", filename)
+	quit() // that is an error - all runs are stored to data files
+}
+x = infile.scanstr(stemp)
+x = sscanf(stemp, "%d", &model)
+x = infile.scanstr(stemp)
+x = sscanf(stemp, "%d", &ampmode) // 0 is cc, 1 is vc
+x = infile.scanstr(stemp)
+x = sscanf(stemp, "%f", &tstop)
+x = infile.scanstr(stemp)
+x = sscanf(stemp,"%f", &sdt)
+x = infile.scanstr(stemp)
+x = sscanf(stemp, "%d", &nstim)
+
+stim = new Vector(nstim, 0)
+for i = 0, nstim-1 {
+	infile.scanstr(stemp)
+	x = sscanf(stemp, "%f", &stim.x[i])
+}
+
+x = infile.close()
+
+
+// printf("model: %d  sdt: %7.3f   nstim: %d, tstop: %7.2f\n", model, sdt, nstim, tstop)
+// printf("length of stim: %d  max: %7.2f   min: %7.2f\n", stim.size(), stim.max(), stim.min())
+x = doEvents()
+
+
+// create the cell next
+speccm = 0.9
+totcap =12 // total cap in pF for cell 
+somaarea = totcap *1E-6 / 1 // pf -> uF,assumes 1 uF/cm2; result is in cm2 
+lstd = 1E4*sqrt(somaarea/PI) // convert from cm to um 
+
+create a
+a	{nseg=1 diam=lstd L=lstd
+	insert kht ek_kht = -70
+	insert na ena_na = 50
+    insert klt ek_klt = -70
+	insert ka ek_ka=-70
+	insert ih eh_ih=-43
+	insert hcno eh_hcno = -43 gbar_hcno=0
+	insert leak g_leak=1/10000 erev_leak = -65
+	Ra=150 cm=1}
+access a
+cm = speccm // change this here - minor difference.
+
+if(ampmode == 0) {
+	ic = new IClamp(0.5)
+} else {
+	ic = new VClamp(0.5)
+}
+
+objref w, gc, gp  // window, run control and plot window
+celsius=22       // base model temperature - temp at which measurements were made
+usetable_klt = 0
+usetable_na = 0
+usetable_kht = 0
+usetable_ka = 0
+usetable_ih = 0
+usetable_hcno = 0
+
+// convert from nanosiemens to mho/cm2.
+func nstomho() {
+	return (1E-9*$1/somaarea)
+}
+
+//----------------------------------------------
+// Specify cell types by setting the magnitudes of the conductances
+// Conductance levels are taken from Table 1 of Rothman and Manis,
+// 2003c
+//----------------------------------------------
+
+proc set_Type1c() {
+	gnabar_na = nstomho(1000)
+	gkhtbar_kht = nstomho(150)
+	gkltbar_klt = nstomho(0)
+	gkabar_ka = nstomho(0)
+	ghbar_ih = nstomho(0.5)
+	gbar_hcno = nstomho(0)
+	g_leak = nstomho(2)
+	vm0 = -63.9
+}
+
+proc set_Type1t() {
+	gnabar_na = nstomho(1000)
+	gkhtbar_kht = nstomho(80)
+	gkltbar_klt = nstomho(0)
+	gkabar_ka = nstomho(65)
+	ghbar_ih = nstomho(0.5)
+	gbar_hcno = 0
+	g_leak = nstomho(2)
+	vm0 = -64.2
+}
+
+proc set_Type12() {
+	gnabar_na = nstomho(1000)
+	gkhtbar_kht = nstomho(150)
+	gkltbar_klt = nstomho(20)
+	gkabar_ka = nstomho(0)
+	ghbar_ih = nstomho(2)
+	gbar_hcno = 0
+	g_leak = nstomho(2)
+	vm0 = -64.1
+}
+
+proc set_Type21() {
+	gnabar_na = nstomho(1000)
+	gkhtbar_kht = nstomho(150)
+	gkltbar_klt = nstomho(35)
+	gkabar_ka = nstomho(0)
+	ghbar_ih = nstomho(3.5)
+	gbar_hcno = 0
+	g_leak = nstomho(2)
+	vm0 = -63.8
+}
+
+proc set_Type2() {
+	gnabar_na = nstomho(1000)
+	gkhtbar_kht = nstomho(150)
+	gkltbar_klt = nstomho(200)
+	gkabar_ka = nstomho(0)
+	ghbar_ih = nstomho(20)
+	gbar_hcno = 0
+	g_leak = nstomho(2)
+	vm0 = -63.6
+}
+
+// including the "Octopus" cell:
+proc set_Type2o() {
+	gnabar_na = nstomho(1000)
+	gkhtbar_kht = nstomho(150)
+	gkltbar_klt = nstomho(600)
+	gkabar_ka = nstomho(0)
+	ghbar_ih = nstomho(0)
+	gbar_hcno = nstomho(40)
+	g_leak = nstomho(2)
+	vm0 = -66.67
+}
+
+
+
+//-----------------------------------------------------------
+// The main run procedure. Handle IVs as well as pre-specified
+// current levels
+//
+
+strdef filename
+proc rununtil() {
+
+	x=sprint(filename, "testing.txt")
+	// printf("\nData into file: %s\n", filename)
+	outfile = new File()
+	u = outfile.wopen(filename)
+	if(u == 0) {
+		printf("\n Neuron: UNABLE TO OPEN OUTPUT FILE: %s\n\n", filename)
+		return // that is an error - all runs are stored to data files
+	}
+	t = 0
+	erev_leak = -65
+	if(ampmode == 0) {
+		v=vm0
+	} else {
+		v = stim.x[0] // first point in array
+	}
+	
+	finitialize(v)
+	fcurrent()
+	tdone = $1
+ //	printf("Total trace: %7.2f ms\n", tdone)
+ // invoke stimulus with input stimulust dt
+	if(ampmode == 0) {
+		ic.del=0
+		ic.dur=sdt*nstim
+		ic.amp=0
+		stim.play(&ic.amp, sdt)	
+		idat.record(&ic.i) //i link current to stimulus
+	} else {
+		ic.dur[0] = tstop
+		//ic.rs = 0.01
+		stim.play(&ic.amp[0], sdt)
+		idat.record(&ic.i)
+	}
+	vdat.record(&a.v(0.5)) // link voltage to soma voltage
+	tdat.record(&t) // link tdat to time
+	frecord_init()
+	finitialize(v)
+	fcurrent()
+	
+	while (t < tdone) {
+        fadvance()
+	}
+	doEvents()
+	outfile.printf("%d\n", model)
+	outfile.printf("%f\n", dt)
+	outfile.printf("%d\n", vdat.size())
+	for i = 0, vdat.size()-1{
+		outfile.printf("%8.3f\t%8.3f\t%8.3f\n",tdat.x[i], idat.x[i], vdat.x[i])
+	}
+	outfile.close()
+
+}
+
+if(model == 1) {
+	set_Type1c() // set default model to type 1c
+}
+if(model == 2) {
+	set_Type1t() // set default model to type 1t
+}
+if(model == 3) {
+	set_Type12() // set default model to type 12
+}
+if(model == 4) {
+	set_Type21() // set default model to type 21
+}
+if(model == 5) { // set to bushy cell
+	set_Type2()
+}
+if(model == 6) {
+	set_Type2o() // set default model to type wo
+}
+
+ek = -70
+rununtil(tstop)
+quit()

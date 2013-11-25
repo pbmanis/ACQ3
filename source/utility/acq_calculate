@@ -1,0 +1,8 @@
+function acq_calculate()
+%
+% recalculate some parameters after each stimulus update.
+%
+global DFILE
+
+fprintf(1, 'Calling acq_calculate\n');
+return;

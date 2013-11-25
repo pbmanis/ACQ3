@@ -1,0 +1,192 @@
+//acq_pyrmodel.hoc - 
+// reads a stim file from disk (stim.dat)
+// and "plays" it into the cell
+// The stim file has the following structure:
+// (ascii text file)
+// first line: model to select (1-6)
+// second line: dt of stimulus
+// third line: the number of points in the stimulus
+// The remainder of the file is the stimulus waveform
+// The resulting voltage is written out in outfile.dat
+// first line: model run
+// second line: dt of stimulus
+// thrid line: number of points in the stimulus
+// remainder of file:
+// t  i  v  in floating point format, tab spaced.
+// 
+
+init_vec_size=25000 // points in initial vectors for data (large to minimize resizing)
+
+objref stim, stimt, ic, infile, outfile
+objref idat, vdat, tdat
+idat = new Vector(init_vec_size, 0)
+vdat = new Vector(init_vec_size, 0)
+tdat = new Vector(init_vec_size, 0)
+
+strdef stemp
+model = 1
+ampmode = 0
+tstop = 100
+sdt = 0.01
+nstim = 100
+
+// read the stim file
+infile = new File()
+u = infile.ropen("stim.dat")
+if(u == 0) {
+	printf("\n Neuron: UNABLE TO OPEN INPUT FILE: %s\n\n", filename)
+	quit() // that is an error - all runs are stored to data files
+}
+infile.scanstr(stemp)
+sscanf(stemp, "%d", &model)
+infile.scanstr(stemp)
+sscanf(stemp, "%d", &ampmode) // 0 is cc, 1 is vc
+infile.scanstr(stemp)
+sscanf(stemp, "%f", &tstop)
+infile.scanstr(stemp)
+sscanf(stemp,"%f", &sdt)
+infile.scanstr(stemp)
+sscanf(stemp, "%d", &nstim)
+
+stim = new Vector(nstim, 0)
+for i = 0, nstim-1 {
+	infile.scanstr(stemp)
+	sscanf(stemp, "%f", &stim.x[i])
+}
+
+infile.close()
+
+printf("model: %d  dt: %7.3f   nstim: %d, tstop: %7.2f\n", model, sdt, nstim, tstop)
+printf("length of stim: %d  max: %7.2f   min: %7.2f\n", stim.size(), stim.max(), stim.min())
+doEvents()
+
+// convert from nanosiemens to mho/cm2.
+func nstomho() {
+	return (1E-9*$1/somaarea)
+}
+
+
+create a
+	a {
+
+		celsius = 33
+		scalefactor=1.0 // This determines the relative size of the cell
+		stdrin = 300*scalefactor
+		stdrmp = -60
+		totcap = scalefactor * 12 // total cap in pF for cell 
+		effcap = totcap // during simulation runs, sometimes we changed capacitance - that's effcap
+		cm = 1
+		somaarea = totcap *1E-6 / cm // pf -> uF, cm = 1uf/cm^2 nominal; result is in cm2 
+		lstd = 1E4*sqrt(somaarea/PI) // convert from cm to um 
+        pyr_sc = 1.0
+		nseg = 1
+		L = lstd
+		diam = lstd
+
+		insert pyr
+		gnab = nstomho(350)*scalefactor
+		gkb = nstomho(80)*scalefactor
+		gkfb = nstomho(150)*scalefactor
+		gksb = nstomho(40)*scalefactor
+		glb = nstomho(2.8)*scalefactor
+		ghb = nstomho(3)*scalefactor
+
+		cai = 7e-5
+		cao = 2e-3 
+		nai = 10e-3
+		nao = 145e-3
+		ki = 135e-3
+		ko = 3.1e-3
+		cli = 7e-3
+		clo = 120e-3
+		mgo = 1e-3
+
+		ek = -81.5
+		ena = 50
+		eh = -43
+
+		gnabar_pyrc =  gnab * pyr_sc
+		gkbar_pyrc =  gkb * pyr_sc
+		gkabar_pyrc = gkfb * pyr_sc
+		gksbar_pyrc = gksb  * pyr_sc
+		gl_pyrc = glb * pyr_sc
+		ghbar_pyrc = ghb * pyr_sc
+		kif_vh_pyrc = -89.6
+
+		vm0 = -67
+	}
+	access a
+	
+if(ampmode == 0) {
+	ic = new IClamp(0.5)
+} else {
+	ic = new VClamp(0.5)
+}
+objref w, gc, gp  // window, run control and plot window
+// celsius=22 // base model temperature - temp at which measurements were made
+usetable_pyrc= 0
+
+
+//-----------------------------------------------------------
+// The main run procedure. Handle IVs as well as pre-specified
+// current levels
+//
+
+strdef filename
+proc rununtil() {
+
+	sprint(filename, "testing.txt")
+	printf("\nData into file: %s\n", filename)
+	outfile = new File()
+	u = outfile.wopen(filename)
+	if(u == 0) {
+		printf("\n Neuron: UNABLE TO OPEN OUTPUT FILE: %s\n\n", filename)
+		return // that is an error - all runs are stored to data files
+	}
+	t = 0
+	if(ampmode == 0) {
+		v=vm0
+	} else {
+		v = stim.x[0] // first point in array
+	}
+	finitialize(v)
+	fcurrent()
+	tdone = $1
+ // invoke stimulus with input stimulust dt
+	if(ampmode == 0) {
+		ic.del=0
+		ic.dur=sdt*nstim
+		ic.amp=0
+		stim.play(&ic.amp, sdt)	
+		idat.record(&ic.i) //i link current to stimulus
+	} else {
+		ic.dur[0] = tstop
+		//ic.rs = 0.01
+		stim.play(&ic.amp[0], sdt)
+		idat.record(&ic.i)
+	}
+
+	vdat.record(&a.v(0.5)) // link voltage to soma voltage
+	tdat.record(&t) // link tdat to time
+	frecord_init()
+	finitialize(v)
+	fcurrent()
+	
+	while (t < tdone) {
+	fadvance()
+	}
+	
+	outfile.printf("%d\n", model)
+	outfile.printf("%f\n", dt)
+	outfile.printf("%d\n", vdat.size())
+	for i = 0, vdat.size()-1{
+		outfile.printf("%8.3f\t%8.3f\t%8.3f\n",tdat.x[i], idat.x[i], vdat.x[i])
+	}
+	outfile.close()
+
+}
+
+
+
+rununtil(tstop)
+quit()
