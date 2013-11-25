@@ -1,0 +1,235 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Supporting Files &mdash; Acq3 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Acq3 1 documentation" href="index.html" />
+    <link rel="next" title="Data Structures" href="Structures.html" />
+    <link rel="prev" title="Programming Notes" href="Programming.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: 	#845E3A; text-align: left; padding: 10px 10px 15px 15px">
+<a href="http://www.manislab.org"><img src="_static/logo.png" border="0" alt="sampledoc"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Structures.html" title="Data Structures"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Programming.html" title="Programming Notes"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.manislab.org">ManisLab Home</a>&nbsp;|&nbsp;</li>
+        <li><a href="index.html">Acq3 Home </a>&nbsp;|&nbsp;</li>
+        <li><a href="search.html">search </a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">documentation </a>&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Supporting Files</a><ul>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#stimulus-files">Stimulus files</a></li>
+<li><a class="reference internal" href="#acquisition-parameters">Acquisition parameters</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Programming.html"
+                        title="previous chapter">Programming Notes</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Structures.html"
+                        title="next chapter">Data Structures</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="supporting-files">
+<h1>Supporting Files<a class="headerlink" href="#supporting-files" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>The configuration file describes the location of data, acquisition and
+stimulus files, the amplifier type in use, and the default stimulus
+files to be used when switching to current or voltage clamp. The
+configuration file is created by the command new config, and the named
+fields can be filed in. The configuration file is saved with the
+command <tt class="docutils literal"><span class="pre">sc</span></tt> (for save config). A different configuration file can be
+loaded with the command <tt class="docutils literal"><span class="pre">gc</span></tt> (for get config). If the configuration
+parameters are not current visible in the window, they can be brought
+forward either by selecting the config button, or by issuing the
+command  <tt class="docutils literal"><span class="pre">e</span> <span class="pre">config</span></tt> (<tt class="docutils literal"><span class="pre">editconfig</span></tt>).</p>
+<p>When the configuration parameters are displayed, the names of the
+parameters, listed on the left side of the window, can be used as the
+commands to set the values on the right. Most of the parameters are
+self explanatory. However there are a few rules:
+The <tt class="docutils literal"><span class="pre">BasePath</span></tt> is the path under which the various stimulus parameter,
+acquisition parameter and data files are stored. The stimulus,
+acquisition and data paths should be entered relative to this base
+path:</p>
+<div class="highlight-python"><pre>BasePath c:\mat_datac\acq
+StmPath StmPar (Where the program expects to find the stimulus files.
+Note that this can be modified through the protocol menu.)
+AcqPath AcqPar (Where the program expects to find the acquisition
+parameter files.)
+DataPath Data (Where the program stores the data, and associated
+temporary data files.)</pre>
+</div>
+<p>The configuration parameter UserExt defines a text string that is
+prepended to the filename. This is to allow the files to have unique
+identifiers in case the program is used to collect data in an
+environment with more than one data collection occurring on a given
+day.</p>
+</div>
+<div class="section" id="stimulus-files">
+<h2>Stimulus files<a class="headerlink" href="#stimulus-files" title="Permalink to this headline">¶</a></h2>
+<p>Stimulus files are central to the data acquisition operation of the
+program. The stimulus files are really MATLAB structures that are
+polymorphic: each different kind of stimulus is generated by a
+different method, which is driven by the data from the associated
+structure. The stimulus files all have a common header region, and a
+variable tail. The header contains identification of the file type
+(<tt class="docutils literal"><span class="pre">stim</span></tt>), the name of the file, and, upon writing to the data file, the
+m-code for the method and a possibly a copy of the stimulus waveforms.
+The header region is not visible to the user, and cannot be changed
+except within the program. Thus, this structure contains everything
+about the stimulus that might be needed at a later point either to
+reconstruct the stimulus or to determine glitches in stimulus
+computation (which of course will never happen).</p>
+<p>The variable region of the stimulus file contains the data that is
+used to drive the generation of the stimulus waveforms by the method
+routine. For example, the files for the steps method contains
+information about the step levels and durations, the stimulus
+sequence, scale factors, holding voltages/currents, which parameter
+types and which step elements are to be sequenced, the associated
+acquisition control structure/file, and an optional pointer to a
+stimulus file that can be superimposed on the primary file. Note that
+if the associated acquisition control file field is empty, then the
+current acquisition field will be stored along with the stimulus data.
+This is the preferred method.</p>
+<p>The current stimulus waveform can be previewed with the <tt class="docutils literal"><span class="pre">pv</span></tt> command,
+and saved to disk with the s [name] command. If the name doesn&#8217;t match
+the filename field in the structure, then the program will ask if the
+name should be changed. Stimulus files are restored from disk with the
+g [name] command; if no name is given a GUI file browser interface is
+provided to access the files. The contents of the current stimulus
+structure can be listed with the <tt class="docutils literal"><span class="pre">ls</span></tt> command from the MATLAB command
+line; and the structure itself can be returned to the base workspace
+with a command such as <tt class="docutils literal"><span class="pre">s</span> <span class="pre">=</span> <span class="pre">ls</span></tt>; s will contain <tt class="docutils literal"><span class="pre">STIM</span> <span class="pre">(s.STIM)</span></tt>, which is
+the stimulus structure data. It is useful to examine these structures
+and the <tt class="docutils literal"><span class="pre">new.m</span></tt> file when writing new stimulus methods and structures
+(Details of the specific default methods provided with the program are
+described below).</p>
+<p>Stimulus files are stored on disk in the directory designated by the
+configuration. The files are stored as standard MATLAB .mat files, and
+contain a single structure corresponding to the stimulus. If no
+acquisition file is specified when the stimulus file is stored with s,
+then the presently loaded acquisition file is save along with the
+stimulus file; thus the file contains two structures, and retrieving
+the stimulus file then retrieves the acquisition information also.</p>
+</div>
+<div class="section" id="acquisition-parameters">
+<h2>Acquisition parameters<a class="headerlink" href="#acquisition-parameters" title="Permalink to this headline">¶</a></h2>
+<p>The control of data acquisition is separate from the generation of
+stimuli, in the sense that it is held in a different structure that
+can be reused or shared by different stimulus paradigms, or
+alternatively, stored with the stimulus paradigm. Acquisition
+structures are not polymorphic (there is only one kind of acquisition
+structure). Each acquisition structure consists of a fixed section,
+and a variable, user modifiable section. Acquisition parameters
+include the channels to be collected, the sample rate, the number of
+points, the acquisition mode (voltage or current clamp), parameters
+that control the refresh of the display and points displayed,
+amplifier gains, acquisition hardware range settings and scale
+factors, filter settings, and potentially a junction potential offset.
+If not currently visible, the acquisition structure can be brought
+forward with the command <tt class="docutils literal"><span class="pre">e</span> <span class="pre">acq</span></tt>. The current structure can be saved
+with <tt class="docutils literal"><span class="pre">sa</span> <span class="pre">[name]</span></tt>, and retrieved with <tt class="docutils literal"><span class="pre">ga</span> <span class="pre">[name]</span></tt>. The data in the structure
+can be listed at the MATLAB command line with the ld command, or
+retrieved into the base workspace with the command <tt class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">ld</span></tt>. When the
+acquisition structure is currently displayed, the parameters can be
+edited using the same methods as described above for the stimulus
+parameters.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Structures.html" title="Data Structures"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Programming.html" title="Programming Notes"
+             >previous</a> |</li>
+        <li><a href="http://www.manislab.org">ManisLab Home</a>&nbsp;|&nbsp;</li>
+        <li><a href="index.html">Acq3 Home </a>&nbsp;|&nbsp;</li>
+        <li><a href="search.html">search </a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">documentation </a>&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Paul B. Manis.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

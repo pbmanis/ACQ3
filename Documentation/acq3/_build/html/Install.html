@@ -1,0 +1,209 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; Acq3 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Acq3 1 documentation" href="index.html" />
+    <link rel="next" title="Setting Stimulus And Recording Scaling" href="Configuring.html" />
+    <link rel="prev" title="Acq3" href="AboutAcq3.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: 	#845E3A; text-align: left; padding: 10px 10px 15px 15px">
+<a href="http://www.manislab.org"><img src="_static/logo.png" border="0" alt="sampledoc"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Configuring.html" title="Setting Stimulus And Recording Scaling"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="AboutAcq3.html" title="Acq3"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.manislab.org">ManisLab Home</a>&nbsp;|&nbsp;</li>
+        <li><a href="index.html">Acq3 Home </a>&nbsp;|&nbsp;</li>
+        <li><a href="search.html">search </a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">documentation </a>&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#hardware-configuration">Hardware Configuration</a><ul>
+<li><a class="reference internal" href="#connections">Connections</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="AboutAcq3.html"
+                        title="previous chapter">Acq3</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Configuring.html"
+                        title="next chapter">Setting Stimulus And Recording Scaling</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>The program is installed by copying the .m files to their appropriate
+directories. The directory structure is simple. Under the top
+directory (mat_datacacq), are the following:AcqPar (holds
+acquisition parameter files), StmPar (holds stimulus files), Macros
+(holds macro files), configs, and source (all m-files that are
+accessible as commands must reside in the source directory). Under
+source are two directories: private and utility. These are the m-files
+that are not accessible as commands from the command box. m-files in
+the private directory are only accessible from the source directory,
+but not theutility directory. Routines placed in the utility directory
+need to be cognizant of this organization.
+Once the files have been copied, a initial set of stimulus and
+acquisition files can be generated with the command make_standard.
+When this routine exits, a basic set of files can be found in the
+StmPar and AcqPar directories. It is recommended that a routine
+similar to this be created to allow you to automatically regenerate in
+a standard way any stimulus protocols you might use.
+All of the routines necessary for the program are found ini the source
+directory and the directories below it. The MATLAB path is modified to
+include both the source andsourceutility directories when the program
+starts. To do this, you must go to the directory where ACQ is present,
+and run it, after which it should be sufficient to start it from the
+MATLAB command line. A good way to do this in new versions of MATLAB is
+to add a starting script to the MATLAB shortcuts list that appears just
+beneath theMATLAB toolbar.</p>
+<p>The program requires a working copy of MATLAB, with the Data
+Acquisition and Signal Processing Toolboxes.</p>
+</div>
+<div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>The basic configuration is controlled by files located in the config
+subdirectory. The choice of the configuration file is selected by a
+drop-down list when the program is started. The program is provided
+with a default file, called default.mat, which can be modified and
+renamed for each configuration that is desired. Thus, each user, or
+each users experiment, can be organized by using the configurations,
+and appropriate subdirectories. Note that after a configuration file
+is created, it can only be loaded by exiting and restartingACQ.
+Details on configuring the program for specific amplifiers can be
+found in Section F.</p>
+</div>
+<div class="section" id="hardware-configuration">
+<h1>Hardware Configuration<a class="headerlink" href="#hardware-configuration" title="Permalink to this headline">¶</a></h1>
+<p>ACQ uses the MATLAB Data Acquisition Toolbox. Any hardware supported by
+this toolbox can be used for acquisition; the program has been tested
+with 12 and 16 bit boards from National Instruments. In principle, the
+Windows sound card can also be used, although this is neither
+recommended nor fully implemented at present since it is only AC
+coupled and has limited input/output rates. We use NI6052E, NI6251 and NI 6559 boards,
+with the BNC2090 chassis.</p>
+<div class="section" id="connections">
+<h2>Connections<a class="headerlink" href="#connections" title="Permalink to this headline">¶</a></h2>
+<p>Configure NI boards as follows:</p>
+<div class="highlight-python"><pre>Triggering
+
+Connect PFI0/Trig1 to User1 (via a short BNC cable)
+Connect DIO1 to User1 (use a wire jumper)
+Connect DIO0 to PFI6 (use a wire jumper)
+OR:
+Connect PFIO/Trig1 to PFI16 and to DIO1.</pre>
+</div>
+<p>The analog signals can be connected to any of the A-D input channels.
+Select NRSE mode for all channels by setting the appropriate switches
+on the BNC2090. The channels actually sampled and their order are set
+in the acquisition parameter file. However, if you are using an
+Axopatch amplifier, such as the Axopatch 200, 200A or 200B, from Axon
+Instruments (now owned by Molecular Devices), and wish to read the
+telegraphs, you MUST connect the telegraphs as follows:</p>
+<div class="highlight-python"><pre>AmplifierMODEtelegraphtoA-D  input13.
+
+AmplifierGAINtelegraphtoA-D  input14.
+
+AmplifierFILTERtelegraphtoA-D  input15.</pre>
+</div>
+<p>If you wish to control an external set of valves, you will need to
+connect lines from the digital IO port to the valve TTL input. The
+program sets DIO lines 5-8 to control up to 4 valves.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Configuring.html" title="Setting Stimulus And Recording Scaling"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="AboutAcq3.html" title="Acq3"
+             >previous</a> |</li>
+        <li><a href="http://www.manislab.org">ManisLab Home</a>&nbsp;|&nbsp;</li>
+        <li><a href="index.html">Acq3 Home </a>&nbsp;|&nbsp;</li>
+        <li><a href="search.html">search </a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">documentation </a>&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Paul B. Manis.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

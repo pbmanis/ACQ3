@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using The Menu &mdash; Acq3 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Acq3 1 documentation" href="index.html" />
+    <link rel="next" title="Macros" href="Macros.html" />
+    <link rel="prev" title="Utility Commands" href="Utility.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: 	#845E3A; text-align: left; padding: 10px 10px 15px 15px">
+<a href="http://www.manislab.org"><img src="_static/logo.png" border="0" alt="sampledoc"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Macros.html" title="Macros"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Utility.html" title="Utility Commands"
+             accesskey="P">previous</a> |</li>
+        <li><a href="http://www.manislab.org">ManisLab Home</a>&nbsp;|&nbsp;</li>
+        <li><a href="index.html">Acq3 Home </a>&nbsp;|&nbsp;</li>
+        <li><a href="search.html">search </a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">documentation </a>&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using The Menu</a><ul>
+<li><a class="reference internal" href="#file">File</a></li>
+<li><a class="reference internal" href="#edit">Edit</a></li>
+<li><a class="reference internal" href="#protocol">Protocol</a></li>
+<li><a class="reference internal" href="#macros">Macros</a></li>
+<li><a class="reference internal" href="#acquisition">Acquisition</a></li>
+<li><a class="reference internal" href="#display">Display</a></li>
+<li><a class="reference internal" href="#help">Help</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Utility.html"
+                        title="previous chapter">Utility Commands</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Macros.html"
+                        title="next chapter">Macros</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="using-the-menu">
+<h1>Using The Menu<a class="headerlink" href="#using-the-menu" title="Permalink to this headline">¶</a></h1>
+<p>To simplify program operation, a standard drop-down menu list has been
+implemented, as can be seen on the top of the window. The menu
+provides the following functions:</p>
+<div class="section" id="file">
+<h2>File<a class="headerlink" href="#file" title="Permalink to this headline">¶</a></h2>
+<p>This menu entry brings up a submenu largely related to file
+maintenance.</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Open</dt>
+<dd><p class="first last">This invokes the <tt class="docutils literal"><span class="pre">aopen</span></tt> command to open a data file for collection. The
+filename is automatically generated as described above.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Close</dt>
+<dd><p class="first last">This invokes the <tt class="docutils literal"><span class="pre">aclose</span></tt> command to close a currently open data file.
+Closed data files cannot be re-opened.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Gather</dt>
+<dd><p class="first last">This causes the program to update the current command list. Only
+commands that are registered with the program can be executed from the
+command line. Normally this command is used only during program
+development when new commands are added. The gather function is
+implemented automatically on program start-up and normally is not
+needed by the user.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Exit</dt>
+<dd><p class="first last">Closes any open data file and exits the program to the MATLAB prompt.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="edit">
+<h2>Edit<a class="headerlink" href="#edit" title="Permalink to this headline">¶</a></h2>
+<p>This menu brings up a submenu controlling which parameter sets will be
+edited or saved.</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Edit Acquisition</dt>
+<dd><p class="first last">Selects the acquisition parameters for display and command-line
+editing.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Edit Stimulus</dt>
+<dd><p class="first last">Selects the stimulus parameters for display and command-line editing.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Edit Stimulus2</dt>
+<dd><p class="first last">Selects a secondary stimulus parameter set for display and
+modification by a GUI. Note that this only works for pulse stimuli at
+present. The GUI is designed to allow rapid modification of pulse
+trains (for example, used to stimulate afferent fiber systems)
+delivered on a second DAC channel, and updates the information in the
+primary protocol.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Edit Config</dt>
+<dd><p class="first last">Selects the configuration parameters for display and command-line
+editing.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Save Acquisition</dt>
+<dd><p class="first last">Saves the current acquisition parameters to disk, optionally
+overwriting or renaming the file.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Save Config</dt>
+<dd><p class="first last">Saves the current acquisition configuration parameters to disk,
+optionally overwriting or renaming the file.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>New</dt>
+<dd><p class="first last">Each of the New entries corresponds to the creation of a stimulus
+template for a different kind of stimulus. Use this when you are
+making new stimulus sets.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="protocol">
+<h2>Protocol<a class="headerlink" href="#protocol" title="Permalink to this headline">¶</a></h2>
+<p>This menu selection brings up a choice of commands relating to
+protocols, including a dynamically updated list of available protocols
+in the current <tt class="docutils literal"><span class="pre">StmPar</span></tt> directory.</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Save Protocol</dt>
+<dd><p class="first last">Saves the current protocol to disk.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Update Protocols</dt>
+<dd><p class="first last">Reloads the current list of stimulus protocols from the selected
+directory and redisplays them in the menu.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Change Directory</dt>
+<dd><p class="first last">This selection brings up a Windows directory browser to change the
+current stimulus protocol directory. A successful directory selection
+results in an updated list of protocols found in the new directory.
+The entry <tt class="docutils literal"><span class="pre">StmPar</span></tt> in the configuration parameter set is also updated to
+reflect the current choice (however, the configuration is not
+permanently updated, and must be saved manually if the new selection
+is to be made permanent).</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Below this is a list of the recognized <tt class="docutils literal"><span class="pre">StmPar</span></tt> protocols in the
+selected directory. You may select one of these protocols from the
+list, and it will be loaded, recomputed if necessary, and is ready to
+use.</p>
+</div>
+<div class="section" id="macros">
+<h2>Macros<a class="headerlink" href="#macros" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><dl class="first docutils">
+<dt>Update list</dt>
+<dd><p class="first last">reads the contents of the macros directory, and updates the drop-down
+list of available macros.
+The remainder of the list allows selection of a macro from those a
+available.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="acquisition">
+<h2>Acquisition<a class="headerlink" href="#acquisition" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><dl class="first docutils">
+<dt>sequence</dt>
+<dd><p class="first last">causes the program to execute the current sequence, storing data if a
+file is open. This is how most parametric data is collected.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>data</dt>
+<dd><p class="first last">initiates collection of data without sequencing, and repeats until the
+stop button or menu item is selected.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>scope</dt>
+<dd><p class="first last">puts the program in scope mode (same as the button).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>stop</dt>
+<dd><p class="first last">stops ongoing data acquisition (same as the button).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>switch</dt>
+<dd><p class="first last">controls mode switching between voltage and current clamp with
+Axopatch 200 series amplifiers. This requires reading the telegraphs
+from the amplifier.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="display">
+<h2>Display<a class="headerlink" href="#display" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><dl class="first docutils">
+<dt>Erase</dt>
+<dd><p class="first last">forces a redraw of the screen</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">A number of new options allow you to change the display scaling.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="help">
+<h2>Help<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><dl class="first docutils">
+<dt>Help</dt>
+<dd><p class="first last">shows the list of current commands, with a short description of each
+one (taken from the m-file).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Show flags</dt>
+<dd><p class="first last">shows the status of several of the control flags (mostly used for
+debugging).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Clear flags</dt>
+<dd><p class="first last">resets the status of the flags, so that acquisition can run. This was
+necessary at one point to prevent the acquisition from stopping or
+failing to start. If the program seems to have stalled, or does not
+begin collecting data when requested, use this menu item to reset it
+to a known state.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Macros.html" title="Macros"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Utility.html" title="Utility Commands"
+             >previous</a> |</li>
+        <li><a href="http://www.manislab.org">ManisLab Home</a>&nbsp;|&nbsp;</li>
+        <li><a href="index.html">Acq3 Home </a>&nbsp;|&nbsp;</li>
+        <li><a href="search.html">search </a>&nbsp;|&nbsp;</li>
+        <li><a href="contents.html">documentation </a>&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Paul B. Manis.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
