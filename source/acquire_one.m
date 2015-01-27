@@ -10,7 +10,7 @@ function acquire_one(flag, ntake)
 % Included is a test mode for debugging logic when no acquisition system is available.
 %
 % V1.0 - working. synchronizing the A/D and D/A problem solved
-% V1.1 - added file storage support and NRSE mode commands to control board
+% V1.1 - added file storage support and NRSE/RSE mode commands to control board
 %
 % v1.2 - added restart mode for scope mode.
 % if the scope_flag is 1 before a return, then
@@ -81,6 +81,7 @@ global AI AO DIO
 global SCOPE_FLAG STOP_ACQ ONLINE IN_MACRO IN_ACQ
 global HOLD_FLAG HOLD_CURRENT HOLD_VOLTAGE FPOINTS
 global AmpStatus
+global HARDWARE
 
 retval = 0;
 STOP_ACQ = 0;
@@ -526,12 +527,17 @@ swave = 0;
 if(SCOPE_FLAG && ~isempty(strcmp('vsco', fieldnames(local_sf.waveform{1}))))
     swave = 1;
 end;
-%cycle =  cycle - 0.016; % correct cycle so we get a more accurate timing
-if(strcmpi(xmode, 'CC') && HOLD_FLAG) % set holding current in current clamp mode only.
-    HOLD_CURRENT = adj_rmp(HOLD_VOLTAGE, 1, HOLD_CURRENT);
-    pause(0.5); % let things settle down
+if strcmpi(xmode, 'CC')
+    HOLD_Value = HOLD_CURRENT + double(HARDWARE.InputDevice1.OutputOffsetCC(1));
+else
+    HOLD_Value = HOLD_CURRENT + double(HARDWARE.InputDevice1.OutputOffsetVC(1));
 end;
 
+%cycle =  cycle - 0.016; % correct cycle so we get a more accurate timing
+if(strcmpi(xmode, 'CC') && HOLD_FLAG) % set holding current in current clamp mode only.
+    HOLD_Value = adj_rmp(HOLD_VOLTAGE, 1, HOLD_Value);       
+    pause(0.5); % let things settle down
+end;
 stop(DIO);
 putvalue(DIO,[1 1 getvalue(DIO.Line(3:6))]); % reset the dio's high again...
 
@@ -580,45 +586,59 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
                     outdata{1}.v2sco = 0*outdata{1}.v2;
                 end;
                 if(swave)
-                    putdata(AO, [outdata{1}.vsco' + HOLD_CURRENT, outdata{1}.v2sco']); % just use the chosen scope waveform
+                    putdata(AO, [outdata{1}.vsco' + HOLD_Value ...
+                        ,  outdata{1}.v2sco']); % just use the chosen scope waveform
                 else
-                    putdata(AO, [outdata{1}.v' + HOLD_CURRENT, outdata{1}.v2']);
+                    putdata(AO, [outdata{1}.v' + HOLD_Value ...
+                        , outdata{1}.v2']);
                 end;
             else % for waveforms computed in the batch mode
-                if(swave)
+                if(swave && exist('local_sf.waveform{1}.vsco', 'var'))
                     nmain = length(local_sf.waveform{1}.vsco);
                     if(length(local_sf.waveform{1}.v2sco) > nmain)
                         local_sf.waveform{1}.v2sco = local_sf.waveform{1}.v2sco(1:nmain);
                     else
                         local_sf.waveform{1}.v2sco(end:nmain) = zeros(1, nmain-length(local_sf.waveform{1}.v2sco)+1);
                     end;
-                    putdata(AO, double([double(local_sf.waveform{1}.vsco') + double(HOLD_CURRENT), double(local_sf.waveform{1}.v2sco)'])); % just use the chosen scope waveform
+                    putdata(AO, double([double(local_sf.waveform{1}.vsco') + double(HOLD_Value) ...
+                        , double(local_sf.waveform{1}.v2sco)'])); % just use the chosen scope waveform
+                elseif (exist('local_sf.waveform{1}.v2', 'var'))
+                        nmain = length(local_sf.waveform{m}.v);
+                        nsecond = length(local_sf.waveform{m}.v2);
+                        if (nsecond > nmain)
+                            local_sf.waveform{m}.v2 = local_sf.waveform{m}.v2(1:nmain);
+                        else if (nsecond < nmain)
+                                local_sf.waveform{m}.v2(nsecond:nmain) = zeros(1, nmain-nsecond+1);
+                            end;
+                        end;
+                        putdata(AO, double([double(local_sf.waveform{m}.v' + ...
+                            double(HOLD_Value)), ...
+                            double(local_sf.waveform{m}.v2')]));
                 else
                     nmain = length(local_sf.waveform{m}.v);
-                    nsecond = length(local_sf.waveform{m}.v2);
-                    if (nsecond > nmain)
-                        local_sf.waveform{m}.v2 = local_sf.waveform{m}.v2(1:nmain);
-                    else if (nsecond < nmain)
-                            local_sf.waveform{m}.v2(nsecond:nmain) = zeros(1, nmain-nsecond+1);
-                        end;
-                    end;
-                    putdata(AO, double([double(local_sf.waveform{m}.v') + double(HOLD_CURRENT), double(local_sf.waveform{m}.v2')]));
+                    putdata(AO, double([double(local_sf.waveform{m}.v' + ...
+                        double(HOLD_Value)), double(zeros(nmain, 1))]));
                 end;
-
             end;
+            
 %            mcdebugprintf(acqdebug, 'Waveform Computed and loaded\n');
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % CORE ACQUISTION CODE: Do NOT MODIFY
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
-            AI = init_ai(AI, AmpStatus, resetAI); % set up analog input...
+            AI = init_ai(AI, AmpStatus, 1); % set up analog input...
             set(AO,'TransferMode', 'SingleDMA');
-            set(AO,'TriggerType', 'HWDigital'); % trigger on digital line outputs
+            set(AO,'TriggerType', 'HwDigital'); % trigger on digital line outputs
+            set(AO, 'HwDigitalTriggerSource', 'PFI6');
+            set(AO, 'TriggerCondition', 'PositiveEdge');
+
+            
  
             nchan = length(DFILE.Channels.v);
             nsamp = DFILE.Points.v;
             data = zeros(DFILE.Points.v, nchan);
+            [AI, ai_chans] = init_ai(AI, AmpStatus, resetAI);
             start([AI AO]); % but wait for the DIO... 
             pause(0.04); % delay seems necessary to be sure AO is set up
             if((i * m * BigRepeat) == 1) % on first cycle, start DIO when we are ready
@@ -627,7 +647,7 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
                 set(DIO, 'TimerPeriod', cycle);
                 DIO.TimerFcn = {'acqtimer'};
                 putvalue(DIO, [1 1 getvalue(DIO.Line(3:6))]);
-                start(DIO); % timere just ruens until we don't need it anymore.
+                start(DIO); % timer just runs until we don't need it anymore.
             end;
             % it is critical to test STOP_ACQ here - otherwise async call to acq_stop or bye can
             % kill the AI while we are "running", causing an error. 
@@ -663,7 +683,8 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
             %
             % END OF CORE ACQUISITION CODE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+            % fprintf(1, 'data = %8.2f  %8.2f\n', data(10,1), data(10,2));
+            % fprintf(2, 'h1: = %8.2f\n', h1(1));
             rt = AI.InitialTriggerTime; % get the trigger time...
             rms1 = std(data(:,1)); % get rms value of top trace
             rms2 = std(data(:,2));
@@ -675,7 +696,7 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
             % reset the output levels to the holding level
             switch xmode
                 case 'CC'
-                    putsample(AO,[HOLD_CURRENT, 0]); % reset the output levels.
+                    putsample(AO,[HOLD_Value, 0]); % reset the output levels.
                 case 'VC'
                     putsample(AO,[h1, 0]);
                 otherwise
@@ -717,7 +738,7 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
                 while (toc < (cycle-0.5)) % until almost at end time, then... check for holding adjustment
                     pause(0.01);
                 end; % wait for the end of the cycle
-                HOLD_CURRENT = adj_rmp(HOLD_VOLTAGE, 1, HOLD_CURRENT);
+                HOLD_Value = adj_rmp(HOLD_VOLTAGE, 1, HOLD_CURRENT);
             end;
 
             pertime = toc;
@@ -875,20 +896,21 @@ if(isvalid(AI))
     bufsize = round(duration*ActualRate*2/nchan);
     nsamp = round(duration*ActualRate); %/ nchan;
 
-    set(AI, 'InputType', 'SingleEnded'); % Must be set before addchannel
+    set(AI, 'InputType', 'NonReferencedSingleEnded'); % Must be set before addchannel
     set(AI, 'DriveAISenseToGround', 'Off'); % set before addchannel
     set(AI, 'SamplesPerTrigger', nsamp);
     set(AI, 'BufferingMode', 'Manual');
     set(AI, 'BufferingConfig', [bufsize,3]); % needed to allow long buffers.
     % set up the skew for the minimum amount. This makes the sampling
     % nearly simultaneous for each group of channels.%
-    set(AI, 'ChannelSkewMode', 'Minimum'); % keep samples close in time.
+    set(AI, 'ChannelSkewMode', 'Equisample'); % keep samples close in time.
     % skew = get(AI, 'Channelskew');
     set(AI, 'TransferMode', 'SingleDMA');
     set(AI, 'RuntimeErrorFcn', 'acq_timeout');
     set(AI, 'Timeout', 5);
-    set(AI, 'TriggerType', 'HWDigital'); % don't allow triggers.
-    set(AI, 'TriggerCondition', 'NegativeEdge');
+    set(AI, 'TriggerType', 'HwDigital'); % don't allow triggers.
+    set(AI, 'HWDigitalTriggerSource', 'PFI6'); 
+    set(AI, 'TriggerCondition', 'PositiveEdge');
 
 else
     if(~isvalid(AI))

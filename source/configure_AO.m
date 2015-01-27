@@ -4,9 +4,9 @@ global AO STIM DFILE
 global MCList AXPList APRList HARDWARE
 global HOLD_CURRENT
 
-if(~isvalid(AO))
-    error('configure AO: invalid analog output object')
-end;
+% if(~isvalid(AO))
+%     error('configure AO: invalid analog output object')
+% end;
 
 h1 = [0 0];
 
@@ -52,7 +52,8 @@ switch(xmode)
             otherwise
                 set(ao_chans(1), 'UnitsRange', symrange(200));
         end;
-        h1=STIM.Holding.v; % hold;
+        h1 = STIM.Holding.v + HARDWARE.InputDevice1.OutputOffsetVC(1); % hold;
+        fprintf(1, 'h1 set: %8.2f\n', h1);
         putsample(AO, [h1, 0]);
         %putdata(AO,[h1, h1; 0, 0]'); % reset the output levels.
         %start(AO); % necessarey to sync acqusition later.
@@ -86,7 +87,8 @@ switch(xmode)
                 mcdebugprintf(mc_debug, 'unknown amplifier - You set some defaults in the configuration\n');
         end;
         set(ao_chans(2), 'UnitsRange', symrange(10)); % for voltage clamp: 10 v command yields 200 mV (e.g. 20 mV/V).
-        h1=HOLD_CURRENT; % hold;
+        h1= HOLD_CURRENT + HARDWARE.InputDevice1.OutputOffsetCC(1); % hold;
+        fprintf(1, 'h1 set: %8.2f\n', h1);
         putsample(AO, [h1, 0]);
         %putdata(AO,[h1, h1; 0, 0]'); % reset the output levels.
         %start(AO); % necessary to sync acquisition latere...

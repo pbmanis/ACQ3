@@ -12,21 +12,23 @@ hardware = "rig2.hdw" % this is the filename for the configuration
 // the program when it starts from the daqhwinfo call.
 // 
 NAcqBoards = 1  % number of acquisition boards (currently always 1)
-Boards = "NI6052E" % we get capabilities from the boards in the system
+Boards = "NI6251" % we get capabilities from the boards in the system
 Channels = 16
-MaxRate = 333000 % samples per second per channel sampled
+MaxRate = 1250000 % samples per second per channel sampled
 
 // next section defines the amplifiers in the system
-NInputDevices = 3 % the number of "amplifiers" we have attached in this rig
+NInputDevices = 2 % the number of "amplifiers" we have attached in this rig
 
 // for each Input Device, specify the connections etc.
 [InputDevice1]
 Amplifier = "multiclamp"
 Amp1 = [4 3] % which a/d port for primary/secondary channels first amp?
-# Amp2 = [6 7] % which a/d port for primary/secondary channels second amp?
+% Amp2 = [6 7] % which a/d port for primary/secondary channels second amp?
 TelegraphChannels = 0 % we don't have to define this since telegraph is handled differently.
 VCCapable = 1 % we can do both voltage and current clamp
 CCCapable = 1
+OutputOffsetCC = [2.5 0.00] % pA current offset to buck standing DC in system (FIX value in pA)
+OutputOffsetVC = [0.0 0.0]
 
 [InputDevice2]
 Amplifier = "multiclamp"
@@ -38,12 +40,12 @@ CCCapable = 1
 
 // if we have a secondary amplifier connected, it would go here like
 // this:
-[InputDevice3]
-Amplifier = "axopatch"
-Amp1 = [1 2] % which a/d ports for primary output?
-VCCapable = 1 % we can do both current and voltage clamp
-CCCapable = 1
-TelegraphChannels = [13 14 15] % telegraph channels for axopatch or:
+//[InputDevice3]
+//Amplifier = "axopatch"
+//Amp1 = [1 2] % which a/d ports for primary output?
+//VCCapable = 1 % we can do both current and voltage clamp
+//CCCapable = 1
+//TelegraphChannels = [13 14 15] % telegraph channels for axopatch or:
 
 // [InputDevice5]
 //Amplifier = "axoprobe"

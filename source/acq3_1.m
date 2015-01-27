@@ -1,4 +1,4 @@
-function acq3(varargin)
+function acq3_1(varargin)
 % ACQ3 - version 3 of ACQ program
 % incorporates Scott's telegraphs,
 % new stimulus protocols, etc.

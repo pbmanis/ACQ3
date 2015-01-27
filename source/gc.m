@@ -110,7 +110,11 @@ if(exist(cpath2, 'dir') ~= 7)
 end;
 cpath=CONFIG.DataPath.v(find(~isspace(CONFIG.DataPath.v), length(CONFIG.DataPath.v), 'first'));
 CONFIG.DataPath.v = cpath;
-cpath2 = slash4OS([CONFIG.BasePath.v '/' cpath]);
+if strcmp(cpath(2:3), ':\')
+    cpath2 = cpath;
+else
+    cpath2 = slash4OS([CONFIG.BasePath.v '/' cpath]);
+end
 if(exist(cpath2, 'dir') ~= 7)
     QueMessage('gc: Data file path does not exist, creating', 1);
     mkdir(cpath2);
@@ -151,8 +155,11 @@ else
         varargout{1} = 0;
     end;
 end;
-
-cpath = slash4OS([CONFIG.BasePath.v '/' CONFIG.DataPath.v]);
+if strcmp(CONFIG.DataPath.v(2:3), ':\')
+    cpath = CONFIG.BasePath.v;
+else
+    cpath = slash4OS([CONFIG.BasePath.v '/' CONFIG.DataPath.v]);
+end;
 if(exist(cpath, 'dir') ~= 7)
     QueMessage('gc: Data file path does not exist', 1);
     mkdir(cpath);

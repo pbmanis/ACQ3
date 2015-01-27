@@ -69,7 +69,7 @@ switch lower(cmd)
             sel = char(sel(val));
             makeeditor(arg{sel}, sbuffer);
         else
-            struct_edit('clear', arg, sbuffer);
+%            struct_edit('clear', arg, sbuffer);
             makeeditor(arg, sbuffer);
         end;
         WIN_TITLE = arg.frame;

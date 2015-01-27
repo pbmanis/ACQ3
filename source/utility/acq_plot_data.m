@@ -426,11 +426,11 @@ if(first==1) % rebuild the screen ('erase'), but we may proceed to use it to plo
         hp_ola(1)=subplot('position', [olaf.left olaf.bottom olaf.width olaf.height]);
         thblue = [0.5 0.5 1];
         if(isempty(ONLINE_DATA.dx{1}))
-            HO(1) = line([0 1], [NaN NaN], 'Parent', hp_ola(1), 'EraseMode', 'none', 'color', c_da, ...
+            HO(1) = line([0 1], [NaN NaN], 'Parent', hp_ola(1), 'color', c_da, ...
                 'MarkerFaceColor', thblue, 'MarkerEdgeColor', thblue, 'Marker', 'o', 'MarkerSize', msize{1}, ...
                 'LineStyle', lstyle{1});
         else % plot the existing data....
-            HO(1) = line(ONLINE_DATA.dx{1}, ONLINE_DATA.dy{1}, 'Parent', hp_ola(1), 'EraseMode', 'none', 'color', c_da, ...
+            HO(1) = line(ONLINE_DATA.dx{1}, ONLINE_DATA.dy{1}, 'Parent', hp_ola(1), 'color', c_da, ...
                 'MarkerFaceColor', thblue, 'MarkerEdgeColor', thblue, 'Marker', 'o', 'MarkerSize', msize{1}, ...
                 'LineStyle', lstyle{1});
         end;
@@ -450,11 +450,11 @@ if(first==1) % rebuild the screen ('erase'), but we may proceed to use it to plo
         set(gca, 'XLimMode', 'auto');
         set(gca, 'YLimMode', 'auto');
         if(isempty(ONLINE_DATA.dx{2})) % initialize?
-            HO(2) = line([0 1], [NaN NaN], 'Parent', hp_ola(2), 'EraseMode', 'none', 'color', c_da, ...
+            HO(2) = line([0 1], [NaN NaN], 'Parent', hp_ola(2), 'color', c_da, ...
                 'MarkerFaceColor', 'red', 'MarkerEdgeColor', 'red', 'Marker', 'o', 'MarkerSize', msize{2}, ...
                 'LineStyle', lstyle{2});
         else % plot the existing data....
-            HO(2) = line(ONLINE_DATA.dx{2}, ONLINE_DATA.dy{2}, 'Parent', hp_ola(2), 'EraseMode', 'none', 'color', c_da, ...
+            HO(2) = line(ONLINE_DATA.dx{2}, ONLINE_DATA.dy{2}, 'Parent', hp_ola(2), 'color', c_da, ...
                 'MarkerFaceColor', 'red', 'MarkerEdgeColor', 'red', 'Marker', 'o', 'MarkerSize', msize{2}, ...
                 'LineStyle', lstyle{2});
         end;
@@ -515,7 +515,7 @@ if(first==1) % rebuild the screen ('erase'), but we may proceed to use it to plo
     HL = NaN*(zeros(nchannel, rfn));
     for ind=1:rfn
         for j = 1:nchannel
-            HL(j,ind)  = line(tx, tx*NaN, 'Parent', HFRAME(wtarget(j)), 'EraseMode', emode_da, 'color', c_da);
+            HL(j,ind)  = line(tx, tx*NaN, 'Parent', HFRAME(wtarget(j)), 'color', c_da);
         end;
     end;
 
@@ -544,6 +544,7 @@ if(scope_flag ~= 0)
             for ind = 1:rfn % clear plots
                 for j = 1:nchannel
                     set(HL(j,ind),'XData', time(1:2), 'YData', time(1:2)*NaN); %, 'Parent', HP(vwin));
+                    fprintf(1, 'Plotting data');
                 end;
             end;
             rfc = 1;
@@ -607,14 +608,14 @@ else % we are not writing data - so things are a little different
     if(isempty(HLINE)) % create the line objects ...
         for j = 1:nchannel
             if(size(data, 2) >= nchannel)
-                HLINE(j) = line(time, data(:,j), 'Parent', HFRAME(wtarget(j)), 'EraseMode', emode_sc, 'color', c_sc(1,:));
+                HLINE(j) = line(time, data(:,j), 'Parent', HFRAME(wtarget(j)), 'color', c_sc(1,:));
             end;
         end;
         rfcol = rfcol+1;
     else
         for j = 1:nchannel
             if(size(data, 2) >= nchannel)
-                set(HLINE(j),'YData', data(:,j), 'color', c_sc(1,:)); % = line(time, data(:,1), 'Parent', HP(1), 'EraseMode', emode, 'color', c_da);
+                set(HLINE(j),'YData', data(:,j), 'color', c_sc(1,:)); 
             end;
         end;
         rfcol = rfcol + 1;

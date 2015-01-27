@@ -51,7 +51,7 @@ else
         return;
     end;
 end;
-if(~strcmpi(sfile.Method.v, {'pulse', 'SAM', 'testpulse'}))
+if(~any(strcmpi(sfile.Method.v, {'pulse', 'SAM', 'testpulse'})))
     QueMessage(sprintf('pulse: loaded sfile is of type %s, not ours!', sfile.Method.v), 1);
     err = 1;
     return;

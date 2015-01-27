@@ -1,7 +1,7 @@
-function Answer=inputdlg(Prompt, Title, NumLines, DefAns, Resize)
+function [Answer choices]=my_inputdlg(Prompt, Title, NumLines, DefAns, Resize)
 %INPUTDLG Input dialog box.
 %  ANSWER = INPUTDLG(PROMPT) creates a modal dialog box that returns user
-%  input for multiple prompts in the cell array ANSWER. PROMPT is a cell
+%  input for multnpiple prompts in the cell array ANSWER. PROMPT is a cell
 %  array containing the PROMPT strings.
 %
 %  INPUTDLG uses UIWAIT to suspend execution until the user responds.
@@ -47,13 +47,15 @@ function Answer=inputdlg(Prompt, Title, NumLines, DefAns, Resize)
 %    QUESTDLG, TEXTWRAP, UIWAIT, WARNDLG .
 
 %  Copyright 1994-2007 The MathWorks, Inc.
-%  $Revision: 1.58.4.13 $
+%  $Revision: 1.58.4.12 $
+
+% modified 10.17.08 to allow for drop down menus
 
 %%%%%%%%%%%%%%%%%%%%
 %%% Nargin Check %%%
 %%%%%%%%%%%%%%%%%%%%
 error(nargchk(0,5,nargin));
-error(nargoutchk(0,1,nargout));
+error(nargoutchk(0,2,nargout));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Handle Input Args %%%
@@ -161,6 +163,12 @@ EdInfo.FontWeight      = get(InputFig,'DefaultUicontrolFontWeight');
 EdInfo.Style           = 'edit';
 EdInfo.BackgroundColor = 'white';
 
+PopInfo=StInfo;
+PopInfo.FontWeight      = get(InputFig,'DefaultUicontrolFontWeight');
+PopInfo.Style           = 'popupmenu';
+PopInfo.BackgroundColor = 'white';
+PopInfo.Callback = @doOther;
+
 BtnInfo=StInfo;
 BtnInfo.FontWeight          = get(InputFig,'DefaultUicontrolFontWeight');
 BtnInfo.Style               = 'pushbutton';
@@ -237,13 +245,20 @@ AxesHandle=axes('Parent',InputFig,'Position',[0 0 1 1],'Visible','off');
 inputWidthSpecified = false;
 
 for lp=1:NumQuest,
-  if ~ischar(DefAns{lp}),
+  if (iscell(DefAns{lp}) && any(cellfun(@(x) ~ischar(x), DefAns{lp}))) || (~iscell(DefAns{lp}) && ~ischar(DefAns{lp}))
     delete(InputFig);
+    %error('Default Answer must be a cell array of strings.');
     error('MATLAB:inputdlg:InvalidInput', 'Default Answer must be a cell array of strings.');
   end
 
+  if iscell(DefAns{lp})
+      info = PopInfo;
+  else
+      info = EdInfo;
+  end
+  
   EditHandle(lp)=uicontrol(InputFig    , ...
-    EdInfo      , ...
+    info      , ...
     'Max'        ,NumLines(lp,1)       , ...
     'Position'   ,[ TxtXOffset EditYOffset(lp) TxtWidth EditHeight(lp) ], ...
     'String'     ,DefAns{lp}           , ...
@@ -285,7 +300,7 @@ FigPos(2)=0;
 FigPos(3)=FigWidth;
 FigPos(4)=FigHeight;
 
-%set(InputFig,'Position',getnicedialoglocation(FigPos,get(InputFig,'Units')));
+set(InputFig,'Position',getnicedialoglocation(FigPos,get(InputFig,'Units')));
 
 OKHandle=uicontrol(InputFig     ,              ...
   BtnInfo      , ...
@@ -297,7 +312,7 @@ OKHandle=uicontrol(InputFig     ,              ...
   'UserData'   ,'OK'          ...
   );
 
- %setdefaultbutton(InputFig, OKHandle);
+% setdefaultbutton(InputFig, OKHandle);
 
 CancelHandle=uicontrol(InputFig     ,              ...
   BtnInfo      , ...
@@ -343,8 +358,13 @@ if ishandle(InputFig)
   Answer={};
   if strcmp(get(InputFig,'UserData'),'OK'),
     Answer=cell(NumQuest,1);
+    choices=Answer;
     for lp=1:NumQuest,
-      Answer(lp)=get(EditHandle(lp),{'String'});
+        Answer(lp)=get(EditHandle(lp),{'String'}); 
+        choices(lp)=Answer(lp);
+        if strcmp(get(EditHandle(lp), 'style'), 'popupmenu')
+            Answer(lp)=Answer{lp}(get(EditHandle(lp),'value'));
+        end
     end
   end
   delete(InputFig);
@@ -382,6 +402,17 @@ else
   delete(gcbf)
 end
 
+function doOther(obj, evd)
+    whatChoices = get(obj, 'string');
+	if strcmp(whatChoices{get(obj, 'value')}, 'Other...')
+		% we have an 'other' categorization to deal with
+		newValue = my_inputdlg('Enter new choice');
+		if numel(newValue) > 0
+            whatChoices(get(obj, 'value')) = newValue;
+			set(obj, 'string', [whatChoices; 'Other...']);
+		end
+	end
+
 function doResize(FigHandle, evd, multicolumn) %#ok
 % TBD: Check difference in behavior w/ R13. May need to implement
 % additional resize behavior/clean up.
@@ -394,13 +425,11 @@ FigPos = get(FigHandle,'Position');
 FigWidth = FigPos(3);
 FigHeight = FigPos(4);
 
-if(~isempty(Data))
-    if FigWidth < Data.MinFigWidth
+if FigWidth < Data.MinFigWidth
   FigWidth  = Data.MinFigWidth;
   FigPos(3) = Data.MinFigWidth;
   resetPos = true;
 end
-end;
 
 % make sure edit fields use all available space if
 % number of columns is not specified in dialog creation.
@@ -412,12 +441,10 @@ if ~multicolumn
   end
 end
 
-if(~isempty(Data))
-    if FigHeight ~= Data.FigHeight
+if FigHeight ~= Data.FigHeight
   FigPos(4) = Data.FigHeight;
   resetPos = true;
 end
-end;
 
 if resetPos
   set(FigHandle,'Position',FigPos);
@@ -447,3 +474,32 @@ set(object, 'Position', new_position);
 set(object, 'String', old_string, 'Units', old_units);
 
 EditWidth = new_extent(3);
+
+function figure_size = getnicedialoglocation(figure_size, figure_units)
+% adjust the specified figure position to fig nicely over GCBF
+% or into the upper 3rd of the screen
+
+%  Copyright 1999-2006 The MathWorks, Inc.
+%  $Revision: 1.1.6.3 $
+
+%%%%%% PLEASE NOTE %%%%%%%%%
+%%%%%% This file has also been copied into:
+%%%%%% matlab/toolbox/ident/idguis
+%%%%%% If this functionality is changed, please
+%%%%%% change it also in idguis.
+%%%%%% PLEASE NOTE %%%%%%%%%
+
+parentHandle = gcbf;
+propName = 'Position';
+if isempty(parentHandle)
+    parentHandle = 0;
+    propName = 'ScreenSize';
+end
+
+old_u = get(parentHandle,'Units');
+set(parentHandle,'Units',figure_units);
+container_size=get(parentHandle,propName);
+set(parentHandle,'Units',old_u);
+
+figure_size(1) = container_size(1)  + 1/2*(container_size(3) - figure_size(3));
+figure_size(2) = container_size(2)  + 2/3*(container_size(4) - figure_size(4));

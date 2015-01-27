@@ -3,6 +3,9 @@ function [varargout] = acq3(varargin)
 % incorporates Scott's telegraphs,
 % new stimulus protocols, etc.
 
+% Version 3.4 steps some parts to be compatibale with Matlab R2014b, 32
+% bit (changing to the 64 bit matla will require significant changes
+% to the data acquisition section).
 % ACQ: main entry point for the data acquisition program
 % Usage
 %   Called with no arguments, will look for acquisition hardware
@@ -80,14 +83,16 @@ global MCList
 global MC700BConnection
 global ACQVERSION ACQVERDATE
 
+fprintf(1, 'nargin: %d\n', nargin);
+
 % start program - get initial setup to work with.
 if(nargout > 0)
     varargout{1} = 0; % clear the error return flag if we ask for it
 end;
 
 if(nargin == 0) % no arguments - create a window and initialize the program - wait for user to select configuration
-    ACQVERSION = 3.3;
-    ACQVERDATE = '6/20/2012';
+    ACQVERSION = 3.4;
+    ACQVERDATE = '1/13/2015';
     warning('off','MATLAB:dispatcher:InexactCaseMatch')
     h = findobj('Tag', 'Acq'); % look for our window
     if(~isempty(h)) % a screen already exists - EXIT and let existing one run
@@ -136,6 +141,7 @@ if(nargin == 0) % no arguments - create a window and initialize the program - wa
     % uses version 7.6 guide call backs... 
     
     TEST_MODEL = 1; % set to first model...
+
 
 else
     % there is an argument, so we must interpret argument here.

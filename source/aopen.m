@@ -96,7 +96,7 @@ global ACQVERSION
 
 fp = [];
 %fprintf('Creating file %s\n', filename);
-[pa, fp, ext, ver] = fileparts(filename);
+[pa, fp, ext] = fileparts(filename);
 ACQ_FILENAME = fp;
 HFILE.filename = fp;
 HFILE.ext = ext;
