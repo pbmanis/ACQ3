@@ -83,8 +83,6 @@ global MCList
 global MC700BConnection
 global ACQVERSION ACQVERDATE
 
-fprintf(1, 'nargin: %d\n', nargin);
-
 % start program - get initial setup to work with.
 if(nargout > 0)
     varargout{1} = 0; % clear the error return flag if we ask for it

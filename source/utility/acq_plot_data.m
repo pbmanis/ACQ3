@@ -544,7 +544,6 @@ if(scope_flag ~= 0)
             for ind = 1:rfn % clear plots
                 for j = 1:nchannel
                     set(HL(j,ind),'XData', time(1:2), 'YData', time(1:2)*NaN); %, 'Parent', HP(vwin));
-                    fprintf(1, 'Plotting data');
                 end;
             end;
             rfc = 1;
